@@ -4,61 +4,45 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"math/rand"
 	"strconv"
 	"strings"
 	"time"
 )
 
-type Block struct {
-	Index     int
-	Timestamp string
-	Text      string
-	PreHash   string
-	Hash      string
-	Nonce     string
-}
-
-const difficulty = 2
-
-func testPow(oldBlock Block, text string) {
-	var newBlock Block
-	newBlock.Index = oldBlock.Index + 1
-	newBlock.Timestamp = time.Now().String()
-	newBlock.Text = text
-	newBlock.PreHash = oldBlock.Hash
-
+func testPow(name string, difficulty int) {
 	for i := 0; ; i++ {
-		newBlock.Nonce = fmt.Sprintf("%d", i)
-		newBlock.Hash = calculateHash(newBlock)
-		if !isDifficultyValid(newBlock.Hash) {
-			fmt.Println(newBlock.Index)
-			fmt.Println(newBlock.Timestamp)
-			fmt.Println(newBlock.Text)
-			fmt.Println(newBlock.PreHash)
-			fmt.Println(newBlock.Hash)
-			fmt.Println(newBlock.Nonce)
+		start := time.Now()
+		rand.Seed(time.Now().UnixNano())
+		nonce := strconv.Itoa(rand.Int())
+		hash := calculateHash(name, nonce)
+		if !isDifficultyValid(hash, difficulty) {
+
+			fmt.Println(hash)
+			fmt.Println(name)
+			fmt.Println(nonce)
 			fmt.Println("失败!")
 			continue
 		} else {
-			fmt.Println(newBlock.Index)
-			fmt.Println(newBlock.Timestamp)
-			fmt.Println(newBlock.Text)
-			fmt.Println(newBlock.PreHash)
-			fmt.Println(newBlock.Hash)
-			fmt.Println(newBlock.Nonce)
+			end := time.Now()
+
+			fmt.Println("消耗时间：" + end.Sub(start).String() + "ms")
+			fmt.Println(hash)
+			fmt.Println(name)
+			fmt.Println(nonce)
 			fmt.Println("成功")
 			break
 		}
 	}
 }
 
-func isDifficultyValid(hash string) bool {
+func isDifficultyValid(hash string, difficulty int) bool {
 	prefix := strings.Repeat("0", difficulty)
 	return strings.HasPrefix(hash, prefix)
 }
 
-func calculateHash(block Block) string {
-	record := strconv.Itoa(block.Index) + block.Timestamp + block.Text + block.PreHash + block.Nonce
+func calculateHash(name string, nonce string) string {
+	record := name + nonce
 	hash := sha256.New()
 	hash.Write([]byte(record))
 	hashed := hash.Sum(nil)
@@ -66,8 +50,6 @@ func calculateHash(block Block) string {
 }
 
 func main() {
-	t := time.Now()
-	genesisBlock := Block{}
-	genesisBlock = Block{0, t.String(), "", "Hello!", calculateHash(genesisBlock), ""}
-	testPow(genesisBlock, "First!")
+	testPow("Alex", 4)
+	testPow("Clark", 5)
 }
