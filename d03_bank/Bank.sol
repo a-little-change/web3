@@ -15,10 +15,8 @@ contract Bank {
         owner = payable(msg.sender);
     }
 
-    receive() external payable {}
-
-    function deposit() public payable {
-        // 将存款余额放入映射
+    receive() external payable {
+         // 将存款余额放入映射
         balances[msg.sender] += msg.value;
         // 重排存款金额的前 3 名用户
         rankAmount(msg.sender, balances[msg.sender]);
