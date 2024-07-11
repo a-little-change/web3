@@ -136,6 +136,7 @@ contract NFTMarketTest is Test {
         address alex = makeAddr("alex");
         petNFT.mint(alex, 1);
         vm.assume(price > 0.01 ether && price < 10000 ether);
+        vm.assume(buyer != address(0));
         // nft授权
         vm.prank(alex);
         petNFT.approve(address(nftMarket), 1);
