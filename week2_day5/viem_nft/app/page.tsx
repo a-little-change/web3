@@ -1,10 +1,15 @@
-import { owner } from "./client";
+import { owner, tokenURI } from "./client";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
+      <div>
+        <label>Owner Address: </label>
         {owner}
+      </div>
+      <div>
+        <label>Token Id: </label>
+        {tokenURI}
       </div>
     </main>
   );
