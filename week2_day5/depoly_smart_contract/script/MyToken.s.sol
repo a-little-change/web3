@@ -13,5 +13,6 @@ contract MyTokenScript is Script {
         vm.startBroadcast();
         myToken = new MyToken("PetToken", "Pet");
         vm.stopBroadcast();
+        console.log("Pet token address: ", address(myToken));
     }
 }

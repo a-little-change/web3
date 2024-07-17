@@ -1,0 +1,6 @@
+[submodule "week3_day2/sign_and_verify/lib/forge-std"]
+	path = week3_day2/sign_and_verify/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "week3_day2/sign_and_verify/lib/openzeppelin-contracts"]
+	path = week3_day2/sign_and_verify/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts

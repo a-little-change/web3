@@ -17,6 +17,8 @@ contract NFTMarket {
 
     error CannotBuyYouOwnNFT(address nftAddress, uint tokenId, address owner);
 
+    error TransferFailed(address from, address to, uint value);
+
     // NFT合约地址 => TokenId => 上架的NFT
     mapping(address => mapping(uint256 => ListedNFT)) listedNFTs;
 
@@ -71,12 +73,13 @@ contract NFTMarket {
             tokenContract.balanceOf(msg.sender) >= listedNFT.price,
             "You balance isn't enough"
         );
-        tokenContract.transferFrom(
+          delete listedNFTs[nftAddress][tokenId];
+        bool success = tokenContract.transferFrom(
             msg.sender,
             listedNFT.seller,
             listedNFT.price
         );
+        if(!success) revert TransferFailed(msg.sender, listedNFT.seller, listedNFT.price);
         nft.safeTransferFrom(listedNFT.seller, msg.sender, tokenId);
-        delete listedNFTs[nftAddress][tokenId];
     }
 }
