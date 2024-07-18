@@ -8,7 +8,7 @@ const EVENT_ABI = "event Transfer(address indexed, address indexed, uint256)"
 // create public client on Ethereum mainnet
 const client = createPublicClient({
   chain: mainnet,
-  transport: http(),
+  transport: http("https://rpc.payload.de"),
 })
 
 let blockNumber = await client.getBlockNumber();
@@ -22,14 +22,14 @@ let logs = await client.getLogs({
 function App() {
   console.log("logs:", logs)
   logs.forEach(log => {
-    console.log(`从 ${log.args[0]} 转账给 ${log.args[1]} ${Number(log.args[2]) / (10 ** 8)} USDC, 交易ID：${log.transactionHash}`)
+    console.log(`从 ${log.args[0]} 转账给 ${log.args[1]} ${Number(log.args[2]) / (10 ** 6)} USDC, 交易ID：${log.transactionHash}`)
   })
   return (
     <div>
       <ul>
         {logs.map((log, index) => (
           <li key={index}>
-            <p>从 ${log.args[0]} 转账给 ${log.args[1]} ${Number(log.args[2]) / (10 ** 8)} USDC, 交易ID：${log.transactionHash}</p>
+            <p>从 ${log.args[0]} 转账给 ${log.args[1]} ${Number(log.args[2]) / (10 ** 6)} USDC, 交易ID：${log.transactionHash}</p>
           </li>
         ))}
       </ul>
