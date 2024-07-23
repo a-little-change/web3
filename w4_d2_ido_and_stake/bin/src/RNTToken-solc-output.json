@@ -1,0 +1,28 @@
+{
+    "sources": {
+        "/mnt/d/web3/w4_d2_ido_and_stake/src/RNTToken.sol": {
+            "ast": {
+                "absolutePath": "/mnt/d/web3/w4_d2_ido_and_stake/src/RNTToken.sol",
+                "exportedSymbols": {},
+                "id": 2,
+                "license": "MIT",
+                "nodeType": "SourceUnit",
+                "nodes": [
+                    {
+                        "id": 1,
+                        "literals": [
+                            "solidity",
+                            "^",
+                            "0.8",
+                            ".0"
+                        ],
+                        "nodeType": "PragmaDirective",
+                        "src": "33:23:0"
+                    }
+                ],
+                "src": "33:26:0"
+            },
+            "id": 0
+        }
+    }
+}

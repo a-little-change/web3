@@ -7,3 +7,9 @@
 [submodule "w2_d3_foundry/lib/forge-std"]
 	path = w2_d3_foundry/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "w4_d2_ido_and_stake/lib/forge-std"]
+	path = w4_d2_ido_and_stake/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "w4_d2_ido_and_stake/lib/openzeppelin-contracts"]
+	path = w4_d2_ido_and_stake/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
