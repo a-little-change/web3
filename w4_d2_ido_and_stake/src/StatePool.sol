@@ -23,27 +23,44 @@ contract StakePool {
         esToken = esToken_;
     }
 
+    /**
+     * Calculate the previous interest
+     */
+    function _calInterest() private {
+        if (stakeInfos[msg.sender].staked != 0)
+            stakeInfos[msg.sender].unclaimed +=
+                stakeInfos[msg.sender].staked *
+                (block.timestamp - stakeInfos[msg.sender].lastUpdateTime);
+        stakeInfos[msg.sender].lastUpdateTime = block.timestamp;
+    }
+
     function stake(uint value) public {
-        IERC20(token).transferFrom(msg.sender, address(this), value);
-        StakeInfo memory info = stakeInfos[msg.sender];
-        info.unclaimed += info.staked * (block.timestamp - info.lastUpdateTime);
-        info.staked += value;
-        info.lastUpdateTime = block.timestamp;
+        _calInterest();
+        stakeInfos[msg.sender].staked += value;
+        // transfer staked tokens to this contract
+        bool success = IERC20(token).transferFrom(
+            msg.sender,
+            address(this),
+            value
+        );
+        if (!success) revert TransferFailed(msg.sender, address(this), value);
     }
 
     function unstake(uint value) public {
-        IERC20(token).transfer(msg.sender, value);
-        StakeInfo memory info = stakeInfos[msg.sender];
-        info.unclaimed += info.staked * (block.timestamp - info.lastUpdateTime);
-        info.staked -= value;
-        info.lastUpdateTime = block.timestamp;
+        _calInterest();
+        stakeInfos[msg.sender].staked -= value;
+        // transfer unstaked tokens to user
+        bool success = IERC20(token).transfer(msg.sender, value);
+        if (!success) revert TransferFailed(address(this), msg.sender, value);
     }
 
     function claim() public {
-        StakeInfo memory info = stakeInfos[msg.sender];
-        info.unclaimed += info.staked * (block.timestamp - info.lastUpdateTime);
-        info.lastUpdateTime = block.timestamp;
-        ESRNT(token).mint(msg.sender, info.unclaimed);
-        info.unclaimed = 0;
+        _calInterest();
+        // set unclaimed esRNT to 0, prevent reentrant attacks
+        uint interest = stakeInfos[msg.sender].unclaimed;
+        stakeInfos[msg.sender].unclaimed = 0;
+        ESRNT(token).mint(msg.sender, interest);
     }
+
+    error TransferFailed(address from, address to, uint value);
 }

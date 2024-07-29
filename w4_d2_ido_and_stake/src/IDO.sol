@@ -6,50 +6,42 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC2612} from "@openzeppelin/contracts/interfaces/IERC2612.sol";
 
 contract IDO is Ownable {
-    uint public totalSale;
+    uint public constant totalSale = 1e6 ether;
 
-    uint public minAmount;
+    uint public constant minAmount = 0.001 ether;
 
-    uint public maxPurchase;
+    uint public constant maxPurchase = 0.02 ether;
 
-    uint public minRaised;
+    uint public constant minRaised = 100 ether;
 
-    uint public maxRaised;
+    uint public constant maxRaised = 200 ether;
 
-    uint public deadline;
+    uint public immutable deadline = block.timestamp + 30 days;
 
-    address public tokenAddr;
+    uint public totalRaised;
+
+    address public immutable tokenAddr;
 
     mapping(address => uint) public payments;
 
-    struct SignedData {
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
-    }
-
     constructor(address owner, address tokenAddr_) Ownable(owner) {
-        minAmount = 0.001 ether;
-        maxPurchase = 0.02 ether;
-        minRaised = 100 ether;
-        maxRaised = 200 ether;
-        deadline = 30 days;
         tokenAddr = tokenAddr_;
     }
 
     /**
-     * preoder the token
+     * preoder 1e6 tokens
      */
     function presale() public payable {
-        if (block.timestamp > deadline) revert ActivityHasEnded();
+        if (block.timestamp > deadline) revert ActivityIsEnded();
         if (msg.value < minAmount) revert AmountTooSmall();
         uint payment = payments[msg.sender] + msg.value;
         if (payment >= maxPurchase) revert PaymentTooMuch();
         if (address(this).balance >= maxRaised) revert RaisedIsEnough();
+        totalRaised += msg.value;
         payments[msg.sender] = payment;
     }
 
-    function claim(SignedData calldata signedToken) public {
+    function claim() public {
         if (block.timestamp < deadline) revert NotClaimingTime();
         if (payments[msg.sender] == 0) revert PaymentIsZero();
         // If is refunded or transfered, clear the payment; prevent reentrant attacks
@@ -59,25 +51,11 @@ contract IDO is Ownable {
             (bool success, ) = msg.sender.call{value: payments[msg.sender]}("");
             if (!success) revert SendFailed(msg.sender, payments[msg.sender]);
         } else {
-            address owner = Ownable(tokenAddr).owner();
-            uint amount = (totalSale * payments[msg.sender]) / maxRaised;
-            // token owner permit
-            IERC2612(tokenAddr).permit(
-                owner,
-                address(this),
-                amount,
-                deadline,
-                signedToken.v,
-                signedToken.r,
-                signedToken.s
-            );
+            address tokenOwner = Ownable(tokenAddr).owner();
+            uint amount = (totalSale * payments[msg.sender]) / totalRaised;
             // preoder succeed, tranfer the tokens
-            bool success = IERC20(tokenAddr).transferFrom(
-                owner,
-                msg.sender,
-                amount
-            );
-            if (!success) revert TransferFailed(owner, msg.sender, amount);
+            bool success = IERC20(tokenAddr).transferFrom(tokenOwner, msg.sender, amount);
+            if (!success) revert TransferFailed(tokenOwner, msg.sender, amount);
         }
     }
 
@@ -95,7 +73,7 @@ contract IDO is Ownable {
 
     error PaymentIsZero();
 
-    error ActivityHasEnded();
+    error ActivityIsEnded();
 
     error SendFailed(address to, uint value);
 
