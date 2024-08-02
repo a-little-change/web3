@@ -88,11 +88,15 @@ contract NFTMarketV3 is EIP712, Ownable {
         // whether the buyer sender engouth ETH
         if (msg.value < order.price)
             revert SendInsufficientETH(msg.sender, msg.value, order.price);
+        uint price = order.price;
         // charge a 0.3% fee
-        uint amount = (order.price * 997) / 1000;
-        payable(order.maker).transfer(amount);
+        uint fee = (price * 3) / 1000;
         // accumulate total interest
-        totalInterest += order.price - amount;
+        totalInterest += fee;
+        // safe transfer the ETH to maker
+        (bool success, ) = payable(order.maker).call{value: (price - fee)}("");
+        if (!success)
+            revert TransferFailed(msg.sender, order.maker, price - fee);
     }
 
     function stake() external payable {
@@ -115,6 +119,8 @@ contract NFTMarketV3 is EIP712, Ownable {
         stakeInfos[msg.sender].balance = balance - amount;
         // update the rate
         stakeInfos[msg.sender].lastAccRate = accRate;
+        // call event to log the stake info
+        emit Unstake(msg.sender, stakeInfos[msg.sender].balance, accRate);
     }
 
     /**
@@ -134,4 +140,6 @@ contract NFTMarketV3 is EIP712, Ownable {
     error InvalidSigner(address signer, address owner);
 
     error InsufficientBalance(address buyer);
+
+    event Unstake(address staker, uint balance, uint accRate);
 }
