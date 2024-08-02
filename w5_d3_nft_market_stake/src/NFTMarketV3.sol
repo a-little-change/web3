@@ -87,7 +87,7 @@ contract NFTMarketV3 is EIP712, Ownable {
         nft.safeTransferFrom(order.maker, msg.sender, order.tokenId);
         // whether the buyer sender engouth ETH
         if (msg.value < order.price)
-            revert SendInsufficientETH(msg.sender, msg.value, order.price);
+            revert InsufficientETH(msg.sender, msg.value, order.price);
         uint price = order.price;
         // charge a 0.3% fee
         uint fee = (price * 3) / 1000;
@@ -127,11 +127,13 @@ contract NFTMarketV3 is EIP712, Ownable {
      * accumulate the compounded interest rate of stake
      */
     function _accumulateRate() private {
-        accRate = accRate + (accRate * totalInterest) / totalStaked;
+        if (totalStaked != 0)
+            accRate += (accRate * totalInterest) / totalStaked;
+        // reaccumulate the interest
         totalInterest = 0;
     }
 
-    error SendInsufficientETH(address buyer, uint balance, uint price);
+    error InsufficientETH(address buyer, uint balance, uint price);
 
     error TransferFailed(address from, address to, uint value);
 
