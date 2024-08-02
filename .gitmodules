@@ -25,3 +25,15 @@
 [submodule "w4_d5_upgrade_and_create/contract_upgrade/lib/openzeppelin-contracts-upgradeable"]
 	path = w4_d5_upgrade_and_create/contract_upgrade/lib/openzeppelin-contracts-upgradeable
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable
+[submodule "w5_d2_uniswap_v2_core/lib/forge-std"]
+	path = w5_d2_uniswap_v2_core/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "w5_d2_uniswap_v2_core/lib/openzeppelin-contracts"]
+	path = w5_d2_uniswap_v2_core/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "w5_d3_nft_market_stake/lib/forge-std"]
+	path = w5_d3_nft_market_stake/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "w5_d3_nft_market_stake/lib/openzeppelin-contracts"]
+	path = w5_d3_nft_market_stake/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
