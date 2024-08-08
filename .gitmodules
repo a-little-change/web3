@@ -43,3 +43,6 @@
 [submodule "myDex/lib/openzeppelin-contracts"]
 	path = myDex/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "w6_d3_multicall/lib/openzeppelin-contracts"]
+	path = w6_d3_multicall/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
